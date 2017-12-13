@@ -1,0 +1,65 @@
+<?php
+/**
+ * Clean SQL Reports for Magento
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the reative Commons Attribution NonCommercial
+ * (CC-BY-NC).
+ * It is available through the world-wide-web at this URL:
+ * https://tldrlegal.com/license/creative-commons-attribution-noncommercial-(cc-nc)
+ *
+ * DISCLAIMER
+ *
+ * This is a non-commercial software distribution.
+ * Use at your own risk.
+ *
+ * @category    design
+ * @package     clean_sqlreports
+ * @license     https://tldrlegal.com/license/creative-commons-attribution-noncommercial-(cc-nc)   Creative Commons Attribution NonCommercial (CC-BY-NC)
+ * @author      Daniel Tamajon (dtamajon@litesolutions.es)
+ * @repository  https://github.com/dtamajon/custom-reports
+ *
+ */
+?>
+<div class="content-header">
+    <table cellspacing="0">
+        <tr>
+            <td style="<?php echo $this->getHeaderWidth() ?>"><?php echo $this->getHeaderHtml() ?></td>
+            <td class="form-buttons"><?php echo $this->getButtonsHtml() ?></td>
+        </tr>
+    </table>
+</div>
+<div>
+    <?php echo $this->getChildHtml('report.view.filter') ?>
+</div>
+<div>
+    <?php echo $this->getGridHtml() ?>
+</div>
+<script type="text/javascript">
+//<![CDATA[
+    function filterFormSubmit() {
+        var filters = $$('#filter_form input', '#filter_form select');
+        var elements = [];
+        for(var i in filters){
+            if(filters[i].type != 'button' && filters[i].value && filters[i].value.length && !filters[i].disabled) {
+                elements.push(filters[i]);
+            }
+        }
+        var validator  = new Validation('filter_form');
+        if (validator.validate()) {
+            setLocation('<?php echo $this->getFilterUrl(); ?>filter/'+encode_base64(Form.serializeElements(elements))+'/');
+        }
+    }
+
+    function filterFormClear() {
+        var filters = $$('#filter_form input', '#filter_form select');
+        var elements = [];
+        for(var i in filters){
+            if(filters[i].type != 'button' && filters[i].value && filters[i].value.length && !filters[i].disabled) {
+                filters[i].value = '';
+            }
+        }
+    }
+//]]>
+</script>

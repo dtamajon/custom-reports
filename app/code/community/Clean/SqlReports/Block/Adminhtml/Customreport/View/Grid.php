@@ -19,6 +19,11 @@ class Clean_SqlReports_Block_Adminhtml_Customreport_View_Grid extends Mage_Admin
     {
         parent::_prepareLayout();
 
+        if ($this->_getReport()->hasFilterConfig()) {
+            $this->getChild('reset_filter_button')->setData('onclick', 'filterFormClear()');
+            $this->getChild('search_button')->setData('onclick', 'filterFormSubmit()');
+        }
+
         return $this;
     }
 
@@ -97,6 +102,7 @@ class Clean_SqlReports_Block_Adminhtml_Customreport_View_Grid extends Mage_Admin
 
         $store = Mage::app()->getStore();
         $currency_code = $store->getBaseCurrency()->getCode();
+        $allow_column_filter = !$this->_getReport()->hasFilterConfig();
         if (count($items)) {
             $item = reset($items);
             foreach ($item->getData() as $key => $val) {
@@ -105,16 +111,18 @@ class Clean_SqlReports_Block_Adminhtml_Customreport_View_Grid extends Mage_Admin
                 $header_css_class = array();
 
                 $isFilterable = false;
-                if (isset($filterable[$key])) {
-                    $isFilterable = $filterable[$key];
-                    if (is_array($isFilterable) && isset($isFilterable['type']) && $isFilterable['type'] === 'adminhtml/widget_grid_column_filter_select') {
-                        $options = $this->_getFilterableOptions($isFilterable);
-                        $isFilterable = $options ? $isFilterable['type'] : 'adminhtml/widget_grid_column_filter_text';
-                    } else {
+                if ($allow_column_filter) {
+                    if (isset($filterable[$key])) {
                         $isFilterable = $filterable[$key];
+                        if (is_array($isFilterable) && isset($isFilterable['type']) && $isFilterable['type'] === 'adminhtml/widget_grid_column_filter_select') {
+                            $options = $this->_getFilterableOptions($isFilterable);
+                            $isFilterable = $options ? $isFilterable['type'] : 'adminhtml/widget_grid_column_filter_text';
+                        } else {
+                            $isFilterable = $filterable[$key];
+                        }
+                    } elseif (in_array($key, $filterable)) {
+                        $isFilterable = 'adminhtml/widget_grid_column_filter_text';
                     }
-                } elseif (in_array($key, $filterable)) {
-                    $isFilterable = 'adminhtml/widget_grid_column_filter_text';
                 }
                 $label = $key;
                 if (isset($labels[$key])) {
@@ -140,6 +148,8 @@ class Clean_SqlReports_Block_Adminhtml_Customreport_View_Grid extends Mage_Admin
                     }
                 }
 
+
+                ///Check: https://magento.stackexchange.com/questions/164330/magento-column-grid-default-filter-value
                 $this->addColumn(
                     Mage::getModel('catalog/product')->formatUrlKey($key),
                     array(

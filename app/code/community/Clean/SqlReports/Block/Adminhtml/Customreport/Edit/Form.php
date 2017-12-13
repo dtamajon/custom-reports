@@ -75,5 +75,10 @@ class Clean_SqlReports_Block_Adminhtml_Customreport_Edit_Form extends Mage_Admin
             'label'     => Mage::helper('core')->__('Grid Configuration'),
             'style'     => 'width: 640px; height: 200px;'
         ));
+        $fieldset->addField('filter_config', 'textarea', array(
+            'name'      => 'report[filter_config]',
+            'label'     => Mage::helper('core')->__('Filter Configuration'),
+            'style'     => 'width: 640px; height: 200px;'
+        ));
     }
 }

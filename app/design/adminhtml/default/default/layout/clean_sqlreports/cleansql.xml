@@ -43,6 +43,7 @@
         <update handle="adminhtml_adminhtml_customreport"/>
         <reference name="content">
             <block type="cleansql/adminhtml_customreport_view" name="report.view">
+                <block type="cleansql/adminhtml_customreport_view_filter" name="report.view.filter" />
                 <block type="cleansql/adminhtml_customreport_view_grid" name="report.view.grid" as="grid"/>
             </block>
         </reference>
