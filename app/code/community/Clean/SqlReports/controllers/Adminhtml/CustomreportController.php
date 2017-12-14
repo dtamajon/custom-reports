@@ -233,12 +233,16 @@ class Clean_SqlReports_Adminhtml_CustomreportController extends Mage_Adminhtml_C
         $objPHPExcel->getActiveSheet()->setTitle($worksheet_name);
         $objPHPExcel->setActiveSheetIndex(0);
 
-        // Redirect output to a client’s web browser (Excel2007)
-        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-        header("Content-Disposition: attachment;filename=$fileName");
-        header('Cache-Control: max-age=0');
         $objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel2007');
+        ob_start();
         $objWriter->save('php://output');
+        $excelOutput = ob_get_clean();
+
+        $this->_prepareDownloadResponse(
+            $fileName,
+            $excelOutput,
+            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+        );
     }
 
     /**
