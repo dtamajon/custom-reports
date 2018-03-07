@@ -111,12 +111,21 @@ class Clean_SqlReports_Block_Adminhtml_Customreport_View_Grid extends Mage_Admin
                 $header_css_class = array();
 
                 $isFilterable = false;
+                $filterIndex = NULL;
                 if ($allow_column_filter) {
                     if (isset($filterable[$key])) {
+                        if (isset($filterable[$key]['field'])) {
+                            $filterIndex = $filterable[$key]['field'];
+                        }
                         $isFilterable = $filterable[$key];
-                        if (is_array($isFilterable) && isset($isFilterable['type']) && $isFilterable['type'] === 'adminhtml/widget_grid_column_filter_select') {
-                            $options = $this->_getFilterableOptions($isFilterable);
-                            $isFilterable = $options ? $isFilterable['type'] : 'adminhtml/widget_grid_column_filter_text';
+                        if (is_array($isFilterable) && isset($isFilterable['type'])) {
+                            if ($isFilterable['type'] === 'adminhtml/widget_grid_column_filter_select') {
+                                $options = $this->_getFilterableOptions($isFilterable);
+                                $isFilterable = $options ? $isFilterable['type'] : 'adminhtml/widget_grid_column_filter_text';
+                            }
+                            else {
+                                $isFilterable = $filterable[$key]['type'];
+                            }
                         } else {
                             $isFilterable = $filterable[$key];
                         }
@@ -148,11 +157,8 @@ class Clean_SqlReports_Block_Adminhtml_Customreport_View_Grid extends Mage_Admin
                     }
                 }
 
-
                 ///Check: https://magento.stackexchange.com/questions/164330/magento-column-grid-default-filter-value
-                $this->addColumn(
-                    Mage::getModel('catalog/product')->formatUrlKey($key),
-                    array(
+                $grid_params = array(
                         'header'   => Mage::helper('core')->__($label),
                         'index'    => $key,
                         'filter'   => $isFilterable,
@@ -163,7 +169,13 @@ class Clean_SqlReports_Block_Adminhtml_Customreport_View_Grid extends Mage_Admin
                         'column_css_class' => implode(' ', $column_css_class),
                         'header_css_class' => implode(' ', $header_css_class),
                         'currency_code'    => $currency_code
-                    )
+                );
+                if (!empty($filterIndex)) {
+                    $grid_params['filter_index'] = $filterIndex;
+                }
+                $this->addColumn(
+                    Mage::getModel('catalog/product')->formatUrlKey($key),
+                    $grid_params
                 );
             }
         }
