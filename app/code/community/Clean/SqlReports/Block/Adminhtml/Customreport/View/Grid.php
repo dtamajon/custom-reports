@@ -115,7 +115,7 @@ class Clean_SqlReports_Block_Adminhtml_Customreport_View_Grid extends Mage_Admin
                 if ($allow_column_filter) {
                     if (isset($filterable[$key])) {
                         if (isset($filterable[$key]['field'])) {
-                            $filterIndex = $filterable[$key]['field'];
+                            $filterIndex = new Zend_Db_Expr($filterable[$key]['field']);
                         }
                         $isFilterable = $filterable[$key];
                         if (is_array($isFilterable) && isset($isFilterable['type'])) {
@@ -171,7 +171,7 @@ class Clean_SqlReports_Block_Adminhtml_Customreport_View_Grid extends Mage_Admin
                         'currency_code'    => $currency_code
                 );
                 if (!empty($filterIndex)) {
-                    $grid_params['filter_index'] = $filterIndex;
+                    //$grid_params['filter_index'] = $filterIndex;
                 }
                 $this->addColumn(
                     Mage::getModel('catalog/product')->formatUrlKey($key),
